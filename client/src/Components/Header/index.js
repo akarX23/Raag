@@ -23,6 +23,12 @@ const navLinks = [
     text: "About Us",
   },
   {
+    link: "/admin",
+    border: true,
+    text: "Admin Panel",
+    auth: true,
+  },
+  {
     link: "/contact",
     border: false,
     text: "Contact Us",
@@ -59,17 +65,18 @@ class Header extends Component {
   };
 
   renderLink = (info, i, nav) => {
-    return (
-      <a href={info.link} key={i}>
-        <p
-          className={`font-medium text-raag-700 text-lg ${
-            info.border && !nav ? "border-r-2" : ""
-          } my-2 px-4 border-raag-600 hover:underline`}
-        >
-          {info.text}
-        </p>
-      </a>
-    );
+    if (!info.auth || (info.auth && this.props.user.user?.isAuth))
+      return (
+        <a href={info.link} key={i}>
+          <p
+            className={`font-medium text-raag-700 text-lg ${
+              info.border && !nav ? "border-r-2" : ""
+            } my-2 px-4 border-raag-600 hover:underline`}
+          >
+            {info.text}
+          </p>
+        </a>
+      );
   };
 
   getAuthLink = () => {

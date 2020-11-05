@@ -1,6 +1,12 @@
 import axios from "axios";
 
-import { LOGIN, AUTH, LOGOUT } from "../ACTION_TYPES";
+import {
+  LOGIN,
+  AUTH,
+  LOGOUT,
+  ADDUSER,
+  CLEARADMINACTIONS,
+} from "../ACTION_TYPES";
 
 export async function auth() {
   const request = await axios
@@ -32,5 +38,22 @@ export async function logout() {
   return {
     type: LOGOUT,
     payload: request,
+  };
+}
+
+export async function addUser(details) {
+  const request = await axios
+    .post("/api/addUser", details)
+    .then((response) => response.data);
+
+  return {
+    type: ADDUSER,
+    payload: request,
+  };
+}
+
+export async function clearAdminActions() {
+  return {
+    type: CLEARADMINACTIONS,
   };
 }

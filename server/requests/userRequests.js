@@ -21,6 +21,7 @@ module.exports = function (app) {
             });
           return res.status(200).json({
             success: true,
+            userAdded: true,
           });
         });
       }
