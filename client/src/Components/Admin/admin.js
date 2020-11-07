@@ -16,7 +16,7 @@ const styles = (theme) => ({
     "&:hover": {
       backgroundColor: "#B85900 !important",
     },
-    color: "#fff",
+    color: "#fff !important",
     fontWeight: "570",
     border: "none !important",
     outline: "none !important",
@@ -85,7 +85,11 @@ class Admin extends Component {
             >
               Add User
             </Button>
-            <Button classes={{ root: classes.add }} variant="contained">
+            <Button
+              classes={{ root: classes.add }}
+              variant="contained"
+              href="/addPost"
+            >
               Add Post
             </Button>
           </div>

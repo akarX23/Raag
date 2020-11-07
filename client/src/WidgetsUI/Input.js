@@ -11,6 +11,7 @@ const Input = ({
   placeholder,
   variant,
   error,
+  rows,
 }) => {
   return (
     <div className="flex w-full flex-col items-start">
@@ -38,6 +39,7 @@ const Input = ({
               notchedOutline: classes.inputNotched,
             },
           }}
+          rows={rows}
         />
       </div>
       <div
