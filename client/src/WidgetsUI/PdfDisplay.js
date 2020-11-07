@@ -76,10 +76,7 @@ const PdfDisplay = ({ pdf, deleteFile }) => {
             <DeleteIcon classes={{ root: classes.icon }} />
           </IconButton>
         </div>
-        <Document
-          file="https://res.cloudinary.com/b2me/image/upload/v1604722438/productImages/urjoa8pac3rltvialpkn.pdf"
-          onLoadSuccess={onDocumentLoadSuccess}
-        >
+        <Document file={pdf} onLoadSuccess={onDocumentLoadSuccess}>
           <Page pageNumber={pageNumber} />
         </Document>
         <div className="text-darktheme-200 font-sans text-center flex mt-2 items-center font-medium">

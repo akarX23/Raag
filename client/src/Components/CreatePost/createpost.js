@@ -1,12 +1,16 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
 import { bindActionCreators } from "redux";
+import { createPost, clearPostActions } from "../../actions/postActions";
 import { withStyles } from "@material-ui/core/styles";
 import Button from "@material-ui/core/Button";
+import Snackbar from "@material-ui/core/Snackbar";
+import Alert from "@material-ui/lab/Alert";
 
 import Input from "../../WidgetsUI/Input";
 import UploadImageCard from "../../WidgetsUI/uploadImageCard";
 import PdfDisplay from "../../WidgetsUI/PdfDisplay";
+import Loading from "../../WidgetsUI/loading";
 
 const styles = (theme) => ({
   textField: {
@@ -42,6 +46,10 @@ class CreatePost extends Component {
     imageFiles: [],
     images: [],
     pdf: [],
+    loading: false,
+    alertMessage: "",
+    severity: "",
+    showAlert: false,
   };
 
   handleInputChange = (inputName, value) => {
@@ -115,14 +123,72 @@ class CreatePost extends Component {
     if (inputName === "title" && value === "") return "*This field is required";
   };
 
+  uploadDocuments = () => {
+    this.setState({ loading: true }, () => {
+      const {
+        values: { title, body },
+        imageFiles,
+        pdf,
+      } = this.state;
+      this.props.createPost({
+        title,
+        body,
+        imageFiles,
+        pdfFiles: pdf,
+      });
+    });
+  };
+
+  componentWillReceiveProps(nextProps) {
+    let severity = "",
+      alertMessage = "",
+      showAlert = false;
+    if (nextProps.post.postAction) {
+      if (nextProps.post.postAction.success === false) {
+        showAlert = true;
+        alertMessage = "Something went wrong!";
+        severity = "error";
+        this.setState({ showAlert, alertMessage, severity, loading: false });
+      } else if (nextProps.post.postAction.postAdded === true) {
+        this.props.history.push("/admin");
+      }
+    }
+  }
+
+  componentWillUnmount() {
+    this.props.clearPostActions();
+  }
+
   render() {
     const { classes } = this.props;
-    const { values, errors, imageFiles, images, pdf } = this.state;
+    const {
+      values,
+      errors,
+      imageFiles,
+      images,
+      pdf,
+      loading,
+      showAlert,
+      alertMessage,
+      severity,
+    } = this.state;
+
     return (
       <div className="py-3 px-4">
         <h1 className="text-darktheme-300 pb-2 border-b mb-3 border-darktheme-500">
           Create Post
         </h1>
+        <div className="w-full flex justify-end">
+          <Button
+            color="secondary"
+            variant="contained"
+            classes={{ root: classes.upload }}
+            component="span"
+            onClick={this.uploadDocuments}
+          >
+            Create post
+          </Button>
+        </div>
         <div className="mx-auto w-full sm:w-4/5">
           <Input
             label="Title"
@@ -187,6 +253,21 @@ class CreatePost extends Component {
             ))}
           </div>
         </div>
+        <Snackbar
+          open={showAlert}
+          autoHideDuration={3000}
+          onClose={() => this.setState({ showAlert: false })}
+          anchorOrigin={{ vertical: "top", horizontal: "center" }}
+        >
+          <Alert
+            variant="filled"
+            onClose={() => this.setState({ showAlert: false })}
+            severity={severity}
+          >
+            {alertMessage}
+          </Alert>
+        </Snackbar>
+        <Loading showLoading={loading} />;
       </div>
     );
   }
@@ -199,7 +280,7 @@ const mapStateToProps = (state) => {
 };
 
 const mapDispatchToProps = (dispatch) => ({
-  ...bindActionCreators({}, dispatch),
+  ...bindActionCreators({ createPost, clearPostActions }, dispatch),
 });
 
 export default connect(

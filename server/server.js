@@ -31,6 +31,7 @@ mongoose.connect(
 
 // Requests
 require("./requests/userRequests")(app);
+require("./requests/postRequests")(app);
 
 // Production Code
 app.get("/", (req, res) => {
