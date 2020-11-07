@@ -1,4 +1,9 @@
-import { CREATE, CLEARPOSTACTIONS } from "../ACTION_TYPES";
+import {
+  CREATE,
+  CLEARPOSTACTIONS,
+  GETPOSTS,
+  DELETEPOST,
+} from "../ACTION_TYPES";
 
 const post = (state = {}, { type, payload }) => {
   switch (type) {
@@ -6,6 +11,14 @@ const post = (state = {}, { type, payload }) => {
       return { ...state, postAction: payload };
     case CLEARPOSTACTIONS:
       return { ...state, postAction: null };
+    case GETPOSTS:
+      return { ...state, posts: payload };
+    case DELETEPOST:
+      return {
+        ...state,
+        posts: { found: true, posts: payload.posts },
+        postAction: payload.postAction,
+      };
     default:
       return state;
   }

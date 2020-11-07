@@ -8,3 +8,5 @@ export const CLEARADMINACTIONS = "clearadminactions";
 // POST
 export const CREATE = "create";
 export const CLEARPOSTACTIONS = "clearpostactions";
+export const GETPOSTS = "getposts";
+export const DELETEPOST = "deleteposts";

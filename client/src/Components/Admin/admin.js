@@ -1,6 +1,7 @@
 import React, { Component } from "react";
 import { bindActionCreators } from "redux";
 import { connect } from "react-redux";
+import { getPosts, deletePost } from "../../actions/postActions";
 import { withStyles } from "@material-ui/core/styles";
 import Button from "@material-ui/core/Button";
 import Snackbar from "@material-ui/core/Snackbar";
@@ -9,6 +10,7 @@ import { addUser, clearAdminActions } from "../../actions/userActions";
 
 import Loading from "../../WidgetsUI/loading";
 import AddUser from "../../WidgetsUI/AddUser";
+import PostPreview from "../../WidgetsUI/PostPreview";
 
 const styles = (theme) => ({
   add: {
@@ -32,17 +34,43 @@ class Admin extends Component {
     addUser: false,
     showAlert: false,
     alert: "",
-    severity: "",
+    severity: "error",
+  };
+
+  renderPosts = () => {
+    if (!this.props.posts.posts?.found) return null;
+
+    if (this.props.posts.posts.posts.length === 0)
+      return (
+        <div className="w-full text-center text-lg text-darktheme-400 font-medium">
+          There are no posts yet. Add one now!
+        </div>
+      );
+
+    return this.props.posts.posts.posts.map((post, i) => (
+      <div key={i} className="w-full mb-4 mt-2">
+        <PostPreview
+          post={post}
+          admin={true}
+          deletePost={() =>
+            this.props.deletePost(post._id, this.props.posts.posts.posts)
+          }
+        />
+      </div>
+    ));
   };
 
   componentWillMount() {
     if (this.props.user.isAuth === false) this.props.history.push("/");
+    this.setState({ loading: true }, () => this.props.getPosts());
   }
 
   componentWillReceiveProps(nextProps) {
+    let alert = "",
+      severity = "error",
+      showAlert = false;
     if (nextProps.user.adminAction) {
-      let alert = "",
-        severity = "";
+      showAlert = true;
       if (nextProps.user.adminAction.success === false) {
         alert = "Something went wrong!";
         severity = "error";
@@ -50,9 +78,8 @@ class Admin extends Component {
         alert = "User Added Successfully";
         severity = "success";
       }
-
-      this.setState({ showAlert: true, alert, severity, loading: false });
     }
+    this.setState({ showAlert, alert, severity, loading: false });
   }
 
   componentWillUnmount() {
@@ -64,11 +91,11 @@ class Admin extends Component {
       user: { user },
       classes,
     } = this.props;
-    if (this.state.loading) return <Loading showLoading={true} />;
-    else if (user.isAuth === true)
+
+    if (user.isAuth === true)
       return (
-        <div className="p-5">
-          <h1 className="text-darktheme-100 font-sans pb-2 border-b border-darktheme-500">
+        <div className="sm:p-5 p-3">
+          <h2 className="text-darktheme-100 font-sans pb-2 border-b border-darktheme-500">
             Welcome, Admin{" "}
             {user.name.substring(
               0,
@@ -76,7 +103,7 @@ class Admin extends Component {
                 ? user.name.indexOf(" ")
                 : user.name.length
             )}
-          </h1>
+          </h2>
           <div className="mt-4 flex justify-around w-full">
             <Button
               variant="contained"
@@ -92,6 +119,12 @@ class Admin extends Component {
             >
               Add Post
             </Button>
+          </div>
+          <div className="w-full mt-3">
+            <h5 className="text-raag-100 pb-1 border-b border-darktheme-600">
+              All Posts
+            </h5>
+            <div className="pt-2">{this.renderPosts()}</div>
           </div>
           <Snackbar
             open={this.state.showAlert}
@@ -116,6 +149,7 @@ class Admin extends Component {
               );
             }}
           />
+          <Loading showLoading={this.state.loading} />
         </div>
       );
 
@@ -126,11 +160,15 @@ class Admin extends Component {
 const mapStateToProps = (state) => {
   return {
     user: state.user,
+    posts: state.post,
   };
 };
 
 const mapDispatchToProps = (dispatch) => ({
-  ...bindActionCreators({ addUser, clearAdminActions }, dispatch),
+  ...bindActionCreators(
+    { addUser, clearAdminActions, getPosts, deletePost },
+    dispatch
+  ),
 });
 
 export default connect(

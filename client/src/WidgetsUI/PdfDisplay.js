@@ -49,7 +49,7 @@ const PdfDisplay = ({ pdf, deleteFile }) => {
     <div className="my-5">
       <div className="bg-darktheme-800 rounded-lg flex justify-between items-center sm:hidden">
         <div className="flex justify-between w-full items-center p-3">
-          <div className="text-darktheme-200 text-2xl flex">
+          <div className="text-darktheme-200 text-lg flex">
             <PictureAsPdfIcon classes={{ root: classes.icon }} />
             <div className="ml-2">{pdf.name}</div>
           </div>

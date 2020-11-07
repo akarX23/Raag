@@ -1,6 +1,11 @@
 import axios from "axios";
 import { storage } from "../firebase";
-import { CREATE, CLEARPOSTACTIONS } from "../ACTION_TYPES";
+import {
+  CREATE,
+  CLEARPOSTACTIONS,
+  GETPOSTS,
+  DELETEPOST,
+} from "../ACTION_TYPES";
 
 async function getImageURLs(imageFiles) {
   let imageURLs = [];
@@ -62,5 +67,34 @@ export async function createPost(data) {
 export function clearPostActions() {
   return {
     type: CLEARPOSTACTIONS,
+  };
+}
+
+export async function getPosts() {
+  const request = await axios
+    .get("/api/posts")
+    .then((response) => response.data);
+
+  return {
+    type: GETPOSTS,
+    payload: request,
+  };
+}
+
+export async function deletePost(id, origionalList) {
+  const request = await axios
+    .get(`/api/deletePost?id=${id}`)
+    .then((response) => response.data);
+
+  if (request.success === true) {
+    origionalList = origionalList.filter((post) => post._id !== id);
+  }
+
+  return {
+    type: DELETEPOST,
+    payload: {
+      postAction: request,
+      posts: origionalList,
+    },
   };
 }
